@@ -25,12 +25,12 @@ def getFeaturedArticleNameAndLink():
 
     day = str(datetime.datetime.today().day)
 
-    # Grabs the wikipedia main page and gets the line with the featured article
-    # Probably not the best way to do this... but it works
+    # Grabs an XML feed that lists the current and past featured articles
     url = 'http://toolserver.org/~skagedal/feeds/fa.xml'
     req = urllib2.Request(url, headers={'User-Agent' : "Magic Browser"})
     con = urllib2.urlopen(req)
 
+    # Uses regexp to find today's article
     search = day + '.*\<\/title\>'
     shortLine = re.search(search, str(con.read()))
 
