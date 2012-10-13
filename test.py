@@ -3,12 +3,11 @@ import sys
 import re
 import tweepy
 import datetime
-import time
 
-CONSUMER_KEY = '-----------------'
-CONSUMER_SECRET = '--------------------------------------------'
-ACCESS_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-ACCESS_SECRET = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+CONSUMER_KEY = 'fs1tgQ8ooW9DvIfjHiCfAQ'
+CONSUMER_SECRET = 'cHMv7KNCZsiRVu0taerYWURXdO4NGV20c0wAMUNaPNI'
+ACCESS_KEY = '460603989-USH4ZjPMrishmSfji7dBB3lvsNGiv7leJ1og1P76'
+ACCESS_SECRET = 'li9i5JNTYGjuJeSqQyV6mhZ9Jq5eNqFboCQ0Eo2Wgo'
 
 articleName = ''
 articleURL = ''
@@ -24,19 +23,15 @@ def getFeaturedArticleNameAndLink():
     global articleName
     global articleURL
 
-    global day 
     day = str(datetime.datetime.today().day)
 
-    global month
-    month = datetime.datetime.now().strftime("%b");
-
-    # Get an rss feed from instapaper of the featured articles
-    url = 'http://www.instapaper.com/special/wikipedia_featured_rss'
+    # Grabs the wikipedia main page and gets the line with the featured article
+    # Probably not the best way to do this... but it works
+    url = 'http://toolserver.org/~skagedal/feeds/fa.xml'
     req = urllib2.Request(url, headers={'User-Agent' : "Magic Browser"})
     con = urllib2.urlopen(req)
 
-    # use regexp to parse the document and find today's article
-    search = 'page\.\<\/description\>\<item\>\<title\>.*?\<\/title\>'
+    search = day + '.*\<\/title\>'
     shortLine = re.search(search, str(con.read()))
 
 
@@ -45,8 +40,7 @@ def getFeaturedArticleNameAndLink():
 
     articleName = info
 
-    # Format the information
-    articleName = articleName.replace("page.</description><item><title>", "")
+    articleName = articleName.replace(day + ": ", "")
     articleName = articleName.replace("</title>", "")
 
     articleURL = "/wiki/" + articleName.replace(' ', '_')
@@ -57,14 +51,17 @@ def printArticleInfo():
     print articleURL
 
 
-# Authenticates and tweets the article
 def tweepyAuthAndTweet():
     auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
     api = tweepy.API(auth)
 
-    message = month + " " + day + ": " + articleName + " [en.wikipedia.org" + articleURL + "]"
+    message = "Today's Featured Article: " + articleName + " [en.wikipedia.org" + articleURL + "]"
     api.update_status(message)
+
+getFeaturedArticleNameAndLink()
+#printArticleInfo()
+tweepyAuthAndTweet()
 
 if __name__ == "__main__":
     main()
